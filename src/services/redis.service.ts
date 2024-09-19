@@ -47,4 +47,28 @@ export class RedisService {
             oneHourInSeconds,
         );
     }
+
+    async getSession(sessionKey: number): Promise<string> {
+        const data = await this.redisRepository.hget(
+            RedisPrefixEnum.MODULE,
+            String(sessionKey),
+            'permisos'
+        )
+
+        if (data) return data;
+
+        return JSON.stringify({
+            "message": "Permisos no encontrados en Redis!"
+        })
+    }
+
+    async saveSession(sessionKey: number, sessionData: SessionInterface): Promise<void> {
+        await this.redisRepository.hsetWithExpiry(
+            RedisPrefixEnum.SESSION,
+            String(sessionKey),
+            'permisos',
+            JSON.stringify(sessionData.permisos),
+            oneDayInSeconds,
+        );
+    }
 }
