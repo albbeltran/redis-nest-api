@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Param, Get, Query } from '@nestjs/common';
+import { Body, Controller, Post, Put, Param, Get, Query } from '@nestjs/common';
 import { RedisService } from 'src/services/redis.service';
 import { SessionDTO, GetSessionDTO } from './dto/session.request.dto';
 
@@ -9,11 +9,16 @@ export class SessionController {
 
     @Get('/:key')
     async getModule(@Param() param: GetSessionDTO): Promise<JSON> {
-        return JSON.parse(await this.redisService.getSession(Number(param.key)));
+        return JSON.parse(await this.redisService.getSession(param.key));
     }
 
     @Post()
-    async saveModule(@Body() sessionDTO: SessionDTO,): Promise<void> {
-        await this.redisService.saveSession(sessionDTO.key, sessionDTO);
+    async saveSession(@Body() sessionDTO: SessionDTO,): Promise<void> {
+        await this.redisService.saveSession(String(sessionDTO.key), sessionDTO);
+    }
+
+    @Put('/:key')
+    async refreshSession(@Param() param: GetSessionDTO): Promise<void> {
+        await this.redisService.refreshSession(param.key);
     }
 }

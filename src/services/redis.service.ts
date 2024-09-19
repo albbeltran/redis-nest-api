@@ -48,10 +48,18 @@ export class RedisService {
         );
     }
 
-    async getSession(sessionKey: number): Promise<string> {
+    async refreshModule(moduleName: string): Promise<void> {
+        await this.redisRepository.refreshExpiry(
+            RedisPrefixEnum.MODULE,
+            String(moduleName),
+            oneHourInSeconds,
+        );
+    }
+
+    async getSession(sessionKey: string): Promise<string> {
         const data = await this.redisRepository.hget(
             RedisPrefixEnum.MODULE,
-            String(sessionKey),
+            sessionKey,
             'permisos'
         )
 
@@ -62,12 +70,20 @@ export class RedisService {
         })
     }
 
-    async saveSession(sessionKey: number, sessionData: SessionInterface): Promise<void> {
+    async saveSession(sessionKey: string, sessionData: SessionInterface): Promise<void> {
         await this.redisRepository.hsetWithExpiry(
             RedisPrefixEnum.SESSION,
-            String(sessionKey),
+            sessionKey,
             'permisos',
             JSON.stringify(sessionData.permisos),
+            oneDayInSeconds,
+        );
+    }
+
+    async refreshSession(sessionKey: string): Promise<void> {
+        await this.redisRepository.refreshExpiry(
+            RedisPrefixEnum.SESSION,
+            sessionKey,
             oneDayInSeconds,
         );
     }
