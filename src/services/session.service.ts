@@ -76,11 +76,26 @@ export class SessionService {
         }
     }
 
+    async getAllSessions(): Promise<any[]> {
+        try {
+            const data = await this.redisRepository.scanSet(RedisPrefixEnum.SESSION);
+
+            return await Promise.all(
+                data.map(async (session) => {
+                    const sessionData = await this.getSession(session.slice(8));
+                    return { 'key': session, 'permisos': JSON.parse(sessionData) };
+                })
+            );
+        } catch (error) {
+            this.handleUnknownError(error);
+        }
+    }
+
     private handleUnknownError(error: any): void {
         if (error instanceof NotFoundException || error instanceof BadRequestException) {
-          throw error;
+            throw error;
         }
         console.error("Error desconocido:", error);
         throw new InternalServerErrorException('Error desconocido. Por favor, contacte a soporte.');
-      }    
+    }
 }

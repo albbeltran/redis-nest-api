@@ -8,6 +8,12 @@ import { TransformInterceptor } from 'src/interceptors/response.interceptor';
 export class OrdsModuleController {
     constructor(private readonly ordsModuleService: OrdsModuleService) { }
 
+    @Get('')
+    async getAllModules() {
+        const result = await this.ordsModuleService.getAllModules();
+        return {message: 'Módulos obtenidos exitosamente', result}
+    }
+
     @Get('/:name')
     async getModule(@Param() param: GetOrdsModuleDTO) {
         const result = JSON.parse(await this.ordsModuleService.getModule(param.name));

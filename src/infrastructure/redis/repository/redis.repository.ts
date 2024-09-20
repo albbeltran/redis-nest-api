@@ -5,7 +5,7 @@ import { RedisRepositoryInterface } from '../../../domain/interface/redis.reposi
 
 @Injectable()
 export class RedisRepository implements OnModuleDestroy, RedisRepositoryInterface {
-    constructor(@Inject('RedisClient') private readonly redisClient: Redis) {}
+    constructor(@Inject('RedisClient') private readonly redisClient: Redis) { }
 
     onModuleDestroy(): void {
         this.redisClient.disconnect();
@@ -23,10 +23,12 @@ export class RedisRepository implements OnModuleDestroy, RedisRepositoryInterfac
         return this.redisClient.hget(`${prefix}:${key}`, field);
     }
 
+    async mget(keys: string[]): Promise<string[]> {
+        return this.redisClient.mget(keys);
+    }
+
     async set(prefix: string, key: string, value: string): Promise<void> {
-        console.log('seteando modulo...');
-        const response = await this.redisClient.set(`${prefix}:${key}`, value);
-        console.log(response);
+        await this.redisClient.set(`${prefix}:${key}`, value);
     }
 
     async hset(prefix: string, key: string, value: string): Promise<void> {
@@ -39,13 +41,13 @@ export class RedisRepository implements OnModuleDestroy, RedisRepositoryInterfac
 
     async setWithExpiry(prefix: string, key: string, value: string, expiry: number): Promise<void> {
         await this.redisClient.set(`${prefix}:${key}`, value, 'EX', expiry);
-        
+
     }
 
     async hsetWithExpiry(prefix: string, key: string, field: string, value: string, expiry: number): Promise<void> {
         await this.redisClient.hset(`${prefix}:${key}`, field, value);
     }
-    
+
     async refreshExpiry(prefix: string, key: string, expiry: number): Promise<void> {
         await this.redisClient.expire(`${prefix}:${key}`, expiry);
     }
@@ -53,5 +55,18 @@ export class RedisRepository implements OnModuleDestroy, RedisRepositoryInterfac
     async expireTime(prefix: string, key: string): Promise<number> {
         const data = await this.redisClient.ttl(`${prefix}:${key}`);
         return data;
+    }
+
+    async scanSet(pattern: string): Promise<string[]> {
+        const keys = [];
+        let nextScan: number;
+        
+        while (nextScan != 0) {
+            const result = await this.redisClient.scan(nextScan != undefined ? nextScan : 0);
+            result[1].forEach(key => key.includes(pattern) && keys.push(key))
+            nextScan = Number(result[0]);
+        }
+
+        return keys;
     }
 }

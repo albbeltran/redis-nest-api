@@ -72,6 +72,20 @@ export class OrdsModuleService {
         }
     }
 
+    async getAllModules(): Promise<any[]> {
+        try {
+            const data = await this.redisRepository.scanSet(RedisPrefixEnum.MODULE);
+            const keys = [];
+
+            data.forEach(async(module) => keys.push(module));
+            const values = await this.redisRepository.mget(keys);
+
+            return keys.map((key, index) => ({ [key]: JSON.parse(values[index]) }));
+        } catch (error) {
+            this.handleUnknownError(error);
+        }
+    }
+
     private handleUnknownError(error: any): void {
         if (error instanceof NotFoundException || error instanceof BadRequestException) {
             throw error;

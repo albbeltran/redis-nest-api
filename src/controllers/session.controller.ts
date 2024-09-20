@@ -6,8 +6,13 @@ import { TransformInterceptor } from 'src/interceptors/response.interceptor';
 @Controller('session')
 @UseInterceptors(TransformInterceptor)
 export class SessionController {
-
     constructor(private readonly sessionService: SessionService) { }
+
+    @Get('')
+    async getAllModules() {
+        const result = await this.sessionService.getAllSessions();
+        return {message: 'Sesiones obtenidass exitosamente', result}
+    }
 
     @Get('/:key')
     async getSession(@Param() param: GetSessionDTO) {
