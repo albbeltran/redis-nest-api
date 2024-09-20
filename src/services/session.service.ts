@@ -83,7 +83,7 @@ export class SessionService {
             return await Promise.all(
                 data.map(async (session) => {
                     const sessionData = await this.getSession(session.slice(8));
-                    return { 'key': session, 'permisos': JSON.parse(sessionData) };
+                    return { 'key': session, 'credentials': JSON.parse(sessionData) };
                 })
             );
         } catch (error) {

@@ -80,7 +80,7 @@ export class OrdsModuleService {
             data.forEach(async(module) => keys.push(module));
             const values = await this.redisRepository.mget(keys);
 
-            return keys.map((key, index) => ({ [key]: JSON.parse(values[index]) }));
+            return keys.map((key, index) => ({ 'name': key, 'token': JSON.parse(values[index]).token }));
         } catch (error) {
             this.handleUnknownError(error);
         }
