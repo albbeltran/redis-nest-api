@@ -15,8 +15,8 @@ export class RedisRepository implements OnModuleDestroy, RedisRepositoryInterfac
         return this.redisClient.get(`${prefix}:${key}`);
     }
 
-    async hget(prefix: string, key: string, value: string): Promise<string | null | any> {
-        return this.redisClient.hget(key, value);
+    async hget(prefix: string, key: string, field: string): Promise<string | null | any> {
+        return this.redisClient.hget(`${prefix}:${key}`, field);
     }
 
     async set(prefix: string, key: string, value: string): Promise<void> {
@@ -36,10 +36,15 @@ export class RedisRepository implements OnModuleDestroy, RedisRepositoryInterfac
     }
 
     async hsetWithExpiry(prefix: string, key: string, field: string, value: string, expiry: number): Promise<void> {
-        await this.redisClient.hset(key, field, value);
+        await this.redisClient.hset(`${prefix}:${key}`, field, value);
     }
     
     async refreshExpiry(prefix: string, key: string, expiry: number): Promise<void> {
-        await this.redisClient.expire(`${prefix}:${key}`, expiry, 'XX');
+        await this.redisClient.expire(`${prefix}:${key}`, expiry);
+    }
+
+    async expireTime(prefix: string, key: string): Promise<number> {
+        const data = await this.redisClient.ttl(`${prefix}:${key}`);
+        return data;
     }
 }

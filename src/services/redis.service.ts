@@ -48,17 +48,24 @@ export class RedisService {
         );
     }
 
+    async expireTimeModule(sessionKey: string): Promise<number> {
+        return await this.redisRepository.expireTime(
+            RedisPrefixEnum.MODULE,
+            sessionKey,
+        );
+    }
+
     async refreshModule(moduleName: string): Promise<void> {
         await this.redisRepository.refreshExpiry(
             RedisPrefixEnum.MODULE,
-            String(moduleName),
+            moduleName,
             oneHourInSeconds,
         );
     }
 
     async getSession(sessionKey: string): Promise<string> {
         const data = await this.redisRepository.hget(
-            RedisPrefixEnum.MODULE,
+            RedisPrefixEnum.SESSION,
             sessionKey,
             'permisos'
         )

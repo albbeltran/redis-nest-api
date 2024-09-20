@@ -12,9 +12,14 @@ export class OrdsmoduleController {
         return JSON.parse(await this.redisService.getToken(param.name));
     }
 
-    @Get('/module/:name')
+    @Get('/:name')
     async getModule(@Param() param: GetOrdsModuleDTO): Promise<JSON> {
         return JSON.parse(await this.redisService.getModule(param.name));
+    }
+
+    @Get('/expiretime/:name')
+    async expireTime(@Param() param: GetOrdsModuleDTO): Promise<number> {
+        return await this.redisService.expireTimeModule(param.name);
     }
 
     @Post()
@@ -22,7 +27,7 @@ export class OrdsmoduleController {
         await this.redisService.saveModule(ordsModuleDTO.name, ordsModuleDTO);
     }
 
-    @Put('/module/:name')
+    @Put('/:name')
     async refreshModule(@Param() param: GetOrdsModuleDTO): Promise<void> {
         await this.redisService.refreshModule(param.name);
     }
