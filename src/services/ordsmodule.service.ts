@@ -77,10 +77,10 @@ export class OrdsModuleService {
             const data = await this.redisRepository.scanSet(RedisPrefixEnum.MODULE);
             const keys = [];
 
-            data.forEach(async(module) => keys.push(module));
+            data.forEach(async (module) => keys.push(module));
             const values = await this.redisRepository.mget(keys);
 
-            return keys.map((key, index) => ({ 'name': key, 'token': JSON.parse(values[index]).token }));
+            return keys.map((key, index) => ({ 'name': key.slice((RedisPrefixEnum.MODULE).length + 1), 'token': JSON.parse(values[index]).token }));
         } catch (error) {
             this.handleUnknownError(error);
         }

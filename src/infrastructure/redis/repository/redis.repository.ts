@@ -41,7 +41,6 @@ export class RedisRepository implements OnModuleDestroy, RedisRepositoryInterfac
 
     async setWithExpiry(prefix: string, key: string, value: string, expiry: number): Promise<void> {
         await this.redisClient.set(`${prefix}:${key}`, value, 'EX', expiry);
-
     }
 
     async hsetWithExpiry(prefix: string, key: string, field: string, value: string, expiry: number): Promise<void> {
