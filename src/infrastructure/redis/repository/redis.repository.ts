@@ -11,8 +11,12 @@ export class RedisRepository implements OnModuleDestroy, RedisRepositoryInterfac
         this.redisClient.disconnect();
     }
 
+    async exists(prefix: string, key: string): Promise<number> {
+        return await this.redisClient.exists(`${prefix}:${key}`);
+    }
+
     async get(prefix: string, key: string): Promise<string | null | any> {
-        return this.redisClient.get(`${prefix}:${key}`);
+        return await this.redisClient.get(`${prefix}:${key}`);
     }
 
     async hget(prefix: string, key: string, field: string): Promise<string | null | any> {
@@ -20,7 +24,9 @@ export class RedisRepository implements OnModuleDestroy, RedisRepositoryInterfac
     }
 
     async set(prefix: string, key: string, value: string): Promise<void> {
-        await this.redisClient.set(`${prefix}:${key}`, value);
+        console.log('seteando modulo...');
+        const response = await this.redisClient.set(`${prefix}:${key}`, value);
+        console.log(response);
     }
 
     async hset(prefix: string, key: string, value: string): Promise<void> {
@@ -33,6 +39,7 @@ export class RedisRepository implements OnModuleDestroy, RedisRepositoryInterfac
 
     async setWithExpiry(prefix: string, key: string, value: string, expiry: number): Promise<void> {
         await this.redisClient.set(`${prefix}:${key}`, value, 'EX', expiry);
+        
     }
 
     async hsetWithExpiry(prefix: string, key: string, field: string, value: string, expiry: number): Promise<void> {
