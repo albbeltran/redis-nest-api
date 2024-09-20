@@ -9,6 +9,7 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe({ transform: true, validateCustomDecorators: true }));
   app.useGlobalFilters(new HttpExceptionFilter());
   app.enableShutdownHooks();  
+  app.enableCors();
   await app.listen(process.env.PORT || 3000);
 
   console.log(`Application is running on: ${await app.getUrl()}`);  
