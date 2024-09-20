@@ -2,13 +2,14 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { RedisModule } from './infrastructure/redis/redis.module';
-import { OrdsmoduleController } from './controllers/ordsmodule.controller';
-import { OrdsmoduleService } from './services/ordsmodule.service';
+import { SessionModule } from './modules/session.module';
+import { OrdsModuleModule } from './modules/ordsmodule.module';
 import { SessionController } from './controllers/session.controller';
+import { OrdsmoduleController } from './controllers/ordsmodule.controller';
 
 @Module({
-  imports: [RedisModule],
-  controllers: [AppController, OrdsmoduleController, SessionController],
-  providers: [AppService, OrdsmoduleService],
+  imports: [RedisModule, SessionModule, OrdsModuleModule],
+  controllers: [AppController, SessionController, OrdsmoduleController],
+  providers: [AppService],
 })
 export class AppModule { }
